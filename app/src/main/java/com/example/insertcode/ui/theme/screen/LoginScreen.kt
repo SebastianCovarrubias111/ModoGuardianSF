@@ -18,8 +18,8 @@ fun LoginScreen(viewModel: LoginViewModel) {
     val windowSize = rememberWindowSizeClass()
     val estado by viewModel.estado.collectAsState()
 
-
-    val isLoginEnabled = estado.email.isNotBlank() && estado.password.isNotBlank() && !estado.isLoading
+    // El botón se mantiene habilitado siempre que NO esté cargando
+    val isLoginEnabled = !estado.isLoading
 
 
     if (windowSize == WindowSizeClass.COMPACT) {
@@ -104,7 +104,7 @@ fun LoginFormContent(
     if (estado.isLoading) {
         CircularProgressIndicator()
     } else {
-        // BOTÓN ENVIAR
+        // BOTÓN ENVIAR (Siempre activo cuando no carga)
         Button(
             onClick = { viewModel.validarFormulario() },
             enabled = isLoginEnabled,
