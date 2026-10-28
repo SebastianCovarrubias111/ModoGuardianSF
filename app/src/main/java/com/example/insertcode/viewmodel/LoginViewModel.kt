@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 class LoginViewModel : ViewModel() {
 
@@ -32,10 +33,20 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    // Actualiza el campo de contraseña y limpia su error
+    // Actualiza el campo de contraseña y limpia sus errores (incluido el de confirmación)
     fun onPasswordChange(valor: String) {
         _estado.update {
-            it.copy(password = valor, errores = it.errores.copy(password = null))
+            it.copy(
+                password = valor,
+                errores = it.errores.copy(password = null, confirmPassword = null)
+            )
+        }
+    }
+
+    // Actualiza el campo de confirmación de contraseña y limpia su error
+    fun onConfirmPasswordChange(valor: String) {
+        _estado.update {
+            it.copy(confirmPassword = valor, errores = it.errores.copy(confirmPassword = null))
         }
     }
 
@@ -46,9 +57,11 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+    // Al cerrar sesión se vuelve al login y se limpian correo y contraseñas
     fun navigateBack() {
         viewModelScope.launch {
             _eventosNavegacion.emit(NavigationEvent.NavigateBack)
+            _estado.value = LoginUiState()
         }
     }
 
@@ -69,8 +82,23 @@ class LoginViewModel : ViewModel() {
             "Debe tener al menos 6 caracteres"
         } else null
 
-        if (emailError != null || passwordError != null) {
-            _estado.update { it.copy(errores = LoginErrores(email = emailError, password = passwordError)) }
+        // Confirmación: no puede estar vacía y debe ser igual a la contraseña
+        val confirmError = if (estadoActual.confirmPassword.isBlank()) {
+            "Debes confirmar la contraseña"
+        } else if (estadoActual.confirmPassword != estadoActual.password) {
+            "Las contraseñas no coinciden"
+        } else null
+
+        if (emailError != null || passwordError != null || confirmError != null) {
+            _estado.update {
+                it.copy(
+                    errores = LoginErrores(
+                        email = emailError,
+                        password = passwordError,
+                        confirmPassword = confirmError
+                    )
+                )
+            }
             return false
         }
 
@@ -109,7 +137,17 @@ class LoginViewModel : ViewModel() {
         }
         return true
     }
+    // Inicio de sesión social (simulado, igual que el login con usuarios de prueba)
 
+    // Inicio de sesión social (simulado): recibe el correo ingresado en la ventana
+    fun loginSocial(correo: String) {
+        viewModelScope.launch {
+            _estado.update { it.copy(isLoading = true, errores = LoginErrores()) }
+            delay(800) // simula la conexión con el proveedor
+            _estado.update { it.copy(isLoading = false, email = correo, rol = "Operador") }
+            _eventosNavegacion.emit(NavigationEvent.NavigateTo(Screen.HomeOperator.route))
+        }
+    }
 
     fun irAPantallaEspecial() {
         viewModelScope.launch {
