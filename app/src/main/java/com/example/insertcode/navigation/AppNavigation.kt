@@ -5,27 +5,38 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.insertcode.ui.theme.screen.ClientesScreen
+import com.example.insertcode.ui.theme.screen.EntregasScreen
 import com.example.insertcode.ui.theme.screen.HomeAdminScreen
 import com.example.insertcode.ui.theme.screen.HomeOperatorScreen
 import com.example.insertcode.ui.theme.screen.HomeSupervisorScreen
+import com.example.insertcode.ui.theme.screen.IndicadoresScreen
 import com.example.insertcode.ui.theme.screen.LoginScreen
 import com.example.insertcode.ui.theme.screen.PantallaPrincipal
 import com.example.insertcode.ui.theme.screen.PerfilScreen
+import com.example.insertcode.ui.theme.screen.PedidosScreen
 import com.example.insertcode.viewmodel.EstadoViewModel
 import com.example.insertcode.viewmodel.LoginViewModel
 import com.example.insertcode.viewmodel.PerfilViewModel
 
-// 1. Definición de las pantallas del sistema (Sealed Class)
 sealed class Screen(val route: String) {
+
     data object Login : Screen("login")
+
     data object HomeAdmin : Screen("home_admin")
     data object HomeSupervisor : Screen("home_supervisor")
     data object HomeOperator : Screen("home_operator")
+
     data object AnimacionesEstados : Screen("animaciones_estados")
     data object Perfil : Screen("perfil")
+
+    data object Clientes : Screen("clientes")
+    data object Pedidos : Screen("pedidos")
+    data object Entregas : Screen("entregas")
+    data object Indicadores : Screen("indicadores")
+
 }
 
-// 2. Eventos de navegación reactiva despachados por el ViewModel
 sealed class NavigationEvent {
     data class NavigateTo(val route: String) : NavigationEvent()
     data object NavigateBack : NavigationEvent()
@@ -39,39 +50,72 @@ fun AppNavigation(
     perfilViewModel: PerfilViewModel,
     modifier: Modifier = Modifier
 ) {
+
     NavHost(
         navController = navController,
         startDestination = Screen.Login.route,
         modifier = modifier
     ) {
-        // Pantalla de Login Principal
-        composable(route = Screen.Login.route) {
+
+        // LOGIN
+        composable(Screen.Login.route) {
             LoginScreen(viewModel = loginViewModel)
         }
 
-        // Pantalla de Inicio para el Rol Administrador
-        composable(route = Screen.HomeAdmin.route) {
-            HomeAdminScreen(viewModel = loginViewModel, navController = navController)
+        // ADMIN
+        composable(Screen.HomeAdmin.route) {
+            HomeAdminScreen(
+                viewModel = loginViewModel,
+                navController = navController
+            )
         }
 
-        // Pantalla de Inicio para el Rol Supervisor
-        composable(route = Screen.HomeSupervisor.route) {
-            HomeSupervisorScreen(viewModel = loginViewModel, navController = navController)
+        // SUPERVISOR
+        composable(Screen.HomeSupervisor.route) {
+            HomeSupervisorScreen(
+                viewModel = loginViewModel,
+                navController = navController
+            )
         }
 
-        // Pantalla de Inicio para el Rol Operador
-        composable(route = Screen.HomeOperator.route) {
-            HomeOperatorScreen(viewModel = loginViewModel, navController = navController)
+        // OPERADOR
+        composable(Screen.HomeOperator.route) {
+            HomeOperatorScreen(
+                viewModel = loginViewModel,
+                navController = navController
+            )
         }
 
-        // Pantalla asociada a la Guía 12 (Animaciones y Estados)
-        composable(route = Screen.AnimacionesEstados.route) {
-            PantallaPrincipal(viewModel = estadoViewModel)
+        // GUÍA 12
+        composable(Screen.AnimacionesEstados.route) {
+            PantallaPrincipal(
+                viewModel = estadoViewModel
+            )
         }
 
-        // Pantalla asociada a la Guía 13 (Cámara y Galería)
-        composable(route = Screen.Perfil.route) {
-            PerfilScreen(viewModel = perfilViewModel)
+        // PERFIL
+        composable(Screen.Perfil.route) {
+            PerfilScreen(
+                viewModel = perfilViewModel
+            )
+        }
+
+        // NUEVAS PANTALLAS
+
+        composable(Screen.Clientes.route) {
+            ClientesScreen(navController)
+        }
+
+        composable(Screen.Pedidos.route) {
+            PedidosScreen(navController)
+        }
+
+        composable(Screen.Entregas.route) {
+            EntregasScreen(navController)
+        }
+
+        composable(Screen.Indicadores.route) {
+            IndicadoresScreen()
         }
     }
 }
