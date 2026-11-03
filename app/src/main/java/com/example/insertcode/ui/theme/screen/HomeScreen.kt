@@ -114,4 +114,3 @@ fun HomeOperatorScreen(viewModel: LoginViewModel, navController: NavHostControll
         }
     }
 }
-
