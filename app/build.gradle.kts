@@ -1,7 +1,13 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
+
+    // CORREGIDO: Eliminamos "org.jetbrains.kotlin.android" porque AGP 9+ ya maneja Kotlin de manera nativa.
+
+    id("com.google.gms.google-services") version "4.4.2"
+    id("org.jetbrains.kotlin.plugin.compose")
 }
+
+
 
 android {
     namespace = "com.example.insertcode"
@@ -56,7 +62,11 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation("androidx.datastore:datastore-preferences:1.1.0")
     implementation("io.coil-kt:coil-compose:2.6.0")
-    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("androidx.compose.material:material-icons-core")
+
+    // Firebase Setup
+    implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
+    implementation("com.google.firebase:firebase-auth") // ¡Agregado para la autenticación de Google!
 }
+
 
