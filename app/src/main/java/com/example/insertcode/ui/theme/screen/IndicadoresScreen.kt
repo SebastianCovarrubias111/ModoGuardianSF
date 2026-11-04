@@ -34,7 +34,6 @@ fun IndicadorCard(
     titulo: String,
     valor: String
 ) {
-
     Card(
         modifier = Modifier
             .fillMaxWidth()

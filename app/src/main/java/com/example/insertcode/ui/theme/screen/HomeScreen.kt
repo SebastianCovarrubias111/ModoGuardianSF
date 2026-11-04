@@ -3,7 +3,6 @@ package com.example.insertcode.ui.theme.screen
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -11,106 +10,144 @@ import com.example.insertcode.navigation.Screen
 import com.example.insertcode.viewmodel.LoginViewModel
 
 @Composable
-fun HomeAdminScreen(viewModel: LoginViewModel, navController: NavHostController) {
+fun HomeAdminScreen(
+    viewModel: LoginViewModel,
+    navController: NavHostController
+) {
+
     val estado by viewModel.estado.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        Text("Panel de Administración", style = MaterialTheme.typography.headlineLarge)
+
+        Text(
+            "Dashboard Comercial",
+            style = MaterialTheme.typography.headlineLarge
+        )
+
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Usuario autenticado: ${estado.email}")
-        Text("Rol asignado: ${estado.rol}")
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Text("Usuario: ${estado.email}")
+        Text("Rol: ${estado.rol}")
 
-        Button(onClick = { viewModel.irAPantallaEspecial() }) {
-            Text("Ir a Modo Especial (Guía 12)")
+        Spacer(modifier = Modifier.height(16.dp))
+
+        IndicadorCard("Ventas Totales", "$12.500.000")
+        IndicadorCard("Pedidos Pendientes", "15")
+        IndicadorCard("Entregas Hoy", "8")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        MenuButton("Clientes") {
+            navController.navigate(Screen.Clientes.route)
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // 🚀 Botón para abrir la Cámara y Galería (Guía 13)
-        Button(onClick = { navController.navigate(Screen.Perfil.route) }) {
-            Text("Ir a Mi Perfil (Cámara/Galería)")
+        MenuButton("Pedidos") {
+            navController.navigate(Screen.Pedidos.route)
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        MenuButton("Entregas") {
+            navController.navigate(Screen.Entregas.route)
+        }
 
-        Button(onClick = { viewModel.navigateBack() }) {
-            Text("Cerrar Sesión")
+        MenuButton("Indicadores") {
+            navController.navigate(Screen.Indicadores.route)
+        }
+
+        MenuButton("Perfil") {
+            navController.navigate(Screen.Perfil.route)
         }
     }
 }
 
 @Composable
-fun HomeSupervisorScreen(viewModel: LoginViewModel, navController: NavHostController) {
+fun HomeSupervisorScreen(
+    viewModel: LoginViewModel,
+    navController: NavHostController
+) {
+
     val estado by viewModel.estado.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        Text("Módulo de Supervisión", style = MaterialTheme.typography.headlineLarge)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Usuario autenticado: ${estado.email}")
-        Text("Rol asignado: ${estado.rol}")
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            "Módulo Supervisor",
+            style = MaterialTheme.typography.headlineLarge
+        )
 
-        Button(onClick = { viewModel.irAPantallaEspecial() }) {
-            Text("Ir a Modo Especial (Guía 12)")
+        Text("Usuario: ${estado.email}")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        MenuButton("Pedidos") {
+            navController.navigate(Screen.Pedidos.route)
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // 🚀 Botón para Supervisor
-        Button(onClick = { navController.navigate(Screen.Perfil.route) }) {
-            Text("Ir a Mi Perfil (Cámara/Galería)")
+        MenuButton("Entregas") {
+            navController.navigate(Screen.Entregas.route)
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        MenuButton("Indicadores") {
+            navController.navigate(Screen.Indicadores.route)
+        }
 
-        Button(onClick = { viewModel.navigateBack() }) {
-            Text("Cerrar Sesión")
+        MenuButton("Perfil") {
+            navController.navigate(Screen.Perfil.route)
         }
     }
 }
 
 @Composable
-fun HomeOperatorScreen(viewModel: LoginViewModel, navController: NavHostController) {
+fun HomeOperatorScreen(
+    viewModel: LoginViewModel,
+    navController: NavHostController
+) {
+
     val estado by viewModel.estado.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        Text("Consola de Operador", style = MaterialTheme.typography.headlineLarge)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Usuario autenticado: ${estado.email}")
-        Text("Rol asignado: ${estado.rol}")
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            "Consola Operador",
+            style = MaterialTheme.typography.headlineLarge
+        )
 
-        Button(onClick = { viewModel.irAPantallaEspecial() }) {
-            Text("Ir a Modo Especial (Guía 12)")
+        Text("Usuario: ${estado.email}")
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        MenuButton("Entregas") {
+            navController.navigate(Screen.Entregas.route)
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // 🚀 Botón para Operador
-        Button(onClick = { navController.navigate(Screen.Perfil.route) }) {
-            Text("Ir a Mi Perfil (Cámara/Galería)")
+        MenuButton("Perfil") {
+            navController.navigate(Screen.Perfil.route)
         }
+    }
+}
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Button(onClick = { viewModel.navigateBack() }) {
-            Text("Cerrar Sesión")
-        }
+@Composable
+fun MenuButton(
+    texto: String,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Text(texto)
     }
 }

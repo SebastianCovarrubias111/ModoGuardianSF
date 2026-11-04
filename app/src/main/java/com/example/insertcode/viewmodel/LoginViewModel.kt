@@ -65,7 +65,7 @@ class LoginViewModel : ViewModel() {
         }
     }
 
-    // 3. Validación y Autenticación con los 3 usuarios del Modo Guardián
+    // 3. Validación y Autenticación con usuarios de InsertCode
     fun validarFormulario(): Boolean {
         val estadoActual = _estado.value
 
@@ -105,20 +105,20 @@ class LoginViewModel : ViewModel() {
         // Simulación de carga (isLoading) ante errores de datos o conectividad
         _estado.update { it.copy(isLoading = true) }
 
-        // Control y validación estricta de credenciales ficticias obligatorias
+        // Credenciales de prueba para el MVP de InsertCode
         val emailInput = estadoActual.email.trim()
         val passwordInput = estadoActual.password
 
         when {
-            emailInput == "admin@guardian.test" && passwordInput == "123456" -> {
+            emailInput == "admin@insertcode.cl" && passwordInput == "123456" -> {
                 _estado.update { it.copy(isLoading = false, rol = "Admin") }
                 navigateTo(Screen.HomeAdmin.route)
             }
-            emailInput == "supervisor@guardian.test" && passwordInput == "123456" -> {
+            emailInput == "supervisor@insertcode.cl" && passwordInput == "123456" -> {
                 _estado.update { it.copy(isLoading = false, rol = "Supervisor") }
                 navigateTo(Screen.HomeSupervisor.route)
             }
-            emailInput == "operador@guardian.test" && passwordInput == "123456" -> {
+            emailInput == "operador@insertcode.cl" && passwordInput == "123456" -> {
                 _estado.update { it.copy(isLoading = false, rol = "Operador") }
                 navigateTo(Screen.HomeOperator.route)
             }
@@ -155,5 +155,3 @@ class LoginViewModel : ViewModel() {
         }
     }
 }
-
-

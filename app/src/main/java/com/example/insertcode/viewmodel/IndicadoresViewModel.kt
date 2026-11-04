@@ -1,4 +1,4 @@
-package com.example.insertcode.viewmodel
+    package com.example.insertcode.viewmodel
 
-class IndicadoresViewModelx {
-}
+    class IndicadoresViewModelx {
+    }

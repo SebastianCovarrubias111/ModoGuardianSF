@@ -103,15 +103,15 @@ fun AppNavigation(
         // NUEVAS PANTALLAS
 
         composable(Screen.Clientes.route) {
-            ClientesScreen()
+            ClientesScreen(navController)
         }
 
         composable(Screen.Pedidos.route) {
-            PedidosScreen()
+            PedidosScreen(navController)
         }
 
         composable(Screen.Entregas.route) {
-            EntregasScreen()
+            EntregasScreen(navController)
         }
 
         composable(Screen.Indicadores.route) {

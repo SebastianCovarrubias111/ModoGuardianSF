@@ -7,9 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 
 @Composable
-fun ClientesScreen() {
+fun ClientesScreen(navController: NavHostController) {
 
     val clientes = listOf(
         "Ferretería Norte",
@@ -30,19 +31,42 @@ fun ClientesScreen() {
             style = MaterialTheme.typography.headlineMedium
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = {
+                navController.popBackStack()
+            }
+        ) {
+            Text("← Volver")
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyColumn {
+
             items(clientes) { cliente ->
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 ) {
-                    Text(
-                        text = cliente,
+
+                    Column(
                         modifier = Modifier.padding(16.dp)
-                    )
+                    ) {
+
+                        Text(
+                            text = cliente,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(
+                            text = "Cliente Activo",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
                 }
             }
         }
