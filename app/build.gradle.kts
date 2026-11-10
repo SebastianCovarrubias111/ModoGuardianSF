@@ -65,7 +65,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core")
 
     // Firebase Setup
-    implementation(platform("com.google.firebase:firebase-bom:35.1.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.19.0"))
     implementation("com.google.firebase:firebase-auth") // ¡Agregado para la autenticación de Google!
 }
 
