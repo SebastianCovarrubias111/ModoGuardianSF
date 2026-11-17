@@ -5,9 +5,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 
 @Composable
-fun IndicadoresScreen() {
+fun IndicadoresScreen(
+    navController: NavHostController
+) {
 
     Column(
         modifier = Modifier
@@ -16,10 +19,19 @@ fun IndicadoresScreen() {
     ) {
 
         Text(
-            "Indicadores",
+            text = "Indicadores",
             style = MaterialTheme.typography.headlineMedium
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Button(
+            onClick = {
+                navController.popBackStack()
+            }
+        ) {
+            Text("← Volver")
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         IndicadorCard("Ventas Totales", "$12.500.000")

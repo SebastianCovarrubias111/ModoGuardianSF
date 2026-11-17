@@ -17,48 +17,56 @@ fun HomeAdminScreen(
 
     val estado by viewModel.estado.collectAsState()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-
-        Text(
-            "Dashboard Comercial",
-            style = MaterialTheme.typography.headlineLarge
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text("Usuario: ${estado.email}")
-        Text("Rol: ${estado.rol}")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        IndicadorCard("Ventas Totales", "$12.500.000")
-        IndicadorCard("Pedidos Pendientes", "15")
-        IndicadorCard("Entregas Hoy", "8")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        MenuButton("Clientes") {
-            navController.navigate(Screen.Clientes.route)
+    Scaffold(
+        bottomBar = {
+            BottomBar(navController)
         }
+    ) { paddingValues ->
 
-        MenuButton("Pedidos") {
-            navController.navigate(Screen.Pedidos.route)
-        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
 
-        MenuButton("Entregas") {
-            navController.navigate(Screen.Entregas.route)
-        }
+            Text(
+                text = "Dashboard Comercial",
+                style = MaterialTheme.typography.headlineLarge
+            )
 
-        MenuButton("Indicadores") {
-            navController.navigate(Screen.Indicadores.route)
-        }
+            Spacer(modifier = Modifier.height(8.dp))
 
-        MenuButton("Perfil") {
-            navController.navigate(Screen.Perfil.route)
+            Text("Usuario: ${estado.email}")
+            Text("Rol: ${estado.rol}")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            IndicadorCard("Ventas Totales", "$12.500.000")
+            IndicadorCard("Pedidos Pendientes", "15")
+            IndicadorCard("Entregas Hoy", "8")
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            MenuButton("Clientes") {
+                navController.navigate(Screen.Clientes.route)
+            }
+
+            MenuButton("Pedidos") {
+                navController.navigate(Screen.Pedidos.route)
+            }
+
+            MenuButton("Entregas") {
+                navController.navigate(Screen.Entregas.route)
+            }
+
+            MenuButton("Indicadores") {
+                navController.navigate(Screen.Indicadores.route)
+            }
+
+            MenuButton("Perfil") {
+                navController.navigate(Screen.Perfil.route)
+            }
         }
     }
 }
@@ -78,11 +86,14 @@ fun HomeSupervisorScreen(
     ) {
 
         Text(
-            "Módulo Supervisor",
+            text = "Módulo Supervisor",
             style = MaterialTheme.typography.headlineLarge
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text("Usuario: ${estado.email}")
+        Text("Rol: ${estado.rol}")
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -119,11 +130,14 @@ fun HomeOperatorScreen(
     ) {
 
         Text(
-            "Consola Operador",
+            text = "Consola Operador",
             style = MaterialTheme.typography.headlineLarge
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text("Usuario: ${estado.email}")
+        Text("Rol: ${estado.rol}")
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -136,6 +150,8 @@ fun HomeOperatorScreen(
         }
     }
 }
+
+
 
 @Composable
 fun MenuButton(

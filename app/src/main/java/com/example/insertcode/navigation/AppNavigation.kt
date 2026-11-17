@@ -96,7 +96,8 @@ fun AppNavigation(
         // PERFIL
         composable(Screen.Perfil.route) {
             PerfilScreen(
-                viewModel = perfilViewModel
+                viewModel = perfilViewModel,
+                navController = navController
             )
         }
 
@@ -115,7 +116,7 @@ fun AppNavigation(
         }
 
         composable(Screen.Indicadores.route) {
-            IndicadoresScreen()
+            IndicadoresScreen(navController)
         }
     }
 }
