@@ -149,6 +149,11 @@ class LoginViewModel : ViewModel() {
         }
     }
 
+    // Cierra sesión: limpia correo y contraseñas
+    fun cerrarSesion() {
+        _estado.value = LoginUiState()
+    }
+
     fun irAPantallaEspecial() {
         viewModelScope.launch {
             _eventosNavegacion.emit(NavigationEvent.NavigateTo(Screen.AnimacionesEstados.route))

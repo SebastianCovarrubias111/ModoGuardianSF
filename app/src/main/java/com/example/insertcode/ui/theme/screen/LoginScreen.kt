@@ -1,5 +1,6 @@
 package com.example.insertcode.ui.theme.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,6 +10,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
@@ -26,6 +28,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.insertcode.ui.theme.GdBackground
+import com.example.insertcode.ui.theme.GdBackgroundAlt
+import com.example.insertcode.ui.theme.GdBorder
+import com.example.insertcode.ui.theme.GdPrimary
+import com.example.insertcode.ui.theme.GdSuccess
+import com.example.insertcode.ui.theme.GdSurface
+import com.example.insertcode.ui.theme.GdSurfaceHigh
+import com.example.insertcode.ui.theme.GdTextMuted
+import com.example.insertcode.ui.theme.GdTextPrimary
 import com.example.insertcode.R
 import com.example.insertcode.model.LoginUiState
 import com.example.insertcode.ui.theme.GuardianGradientBottom
@@ -45,9 +57,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(listOf(GuardianGradientTop, GuardianGradientBottom))
-            )
+            .background(Brush.verticalGradient(listOf(GdBackground, GdBackgroundAlt)))
     ) {
         Column(
             modifier = Modifier
@@ -57,54 +67,57 @@ fun LoginScreen(viewModel: LoginViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // ---------- Encabezado ----------
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(40.dp)
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Modo Guardián",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Text(
-                text = "Inicia sesión para continuar",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.8f),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(28.dp))
+            Column(Modifier.widthIn(max = 480.dp).fillMaxWidth()) {
 
-            // ---------- Tarjeta con el formulario ----------
-            Card(
-                modifier = Modifier
-                    .widthIn(max = 480.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                // Chip de acceso seguro
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50))
+                        .background(GdSuccess.copy(alpha = 0.14f))
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LoginFormContent(
-                        estado = estado,
-                        viewModel = viewModel,
-                        isLoginEnabled = isLoginEnabled
+                    Icon(Icons.Default.Lock, null, tint = GdSuccess, modifier = Modifier.size(14.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        "Acceso seguro",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = GdSuccess,
+                        fontWeight = FontWeight.SemiBold
                     )
+                }
+
+                Spacer(Modifier.height(20.dp))
+                Text(
+                    text = "Bienvenido de nuevo",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = GdTextPrimary
+                )
+                Text(
+                    text = "Accede a tu turno de supervisión",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = GdTextMuted
+                )
+                Spacer(Modifier.height(24.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = GdSurface),
+                    border = BorderStroke(1.dp, GdBorder),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        LoginFormContent(
+                            estado = estado,
+                            viewModel = viewModel,
+                            isLoginEnabled = isLoginEnabled
+                        )
+                    }
                 }
             }
         }
@@ -133,6 +146,7 @@ fun LoginFormContent(
         leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
         singleLine = true,
         shape = formaCampo,
+        colors = coloresCampo(),
         isError = estado.errores.email != null,
         supportingText = { estado.errores.email?.let { Text(it) } },
         keyboardOptions = KeyboardOptions(
@@ -157,6 +171,7 @@ fun LoginFormContent(
         },
         singleLine = true,
         shape = formaCampo,
+        colors = coloresCampo(),
         visualTransformation = transformacion,
         isError = estado.errores.password != null,
         supportingText = { estado.errores.password?.let { Text(it) } },
@@ -177,6 +192,7 @@ fun LoginFormContent(
         leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null) },
         singleLine = true,
         shape = formaCampo,
+        colors = coloresCampo(),
         visualTransformation = transformacion,
         isError = estado.errores.confirmPassword != null,
         supportingText = { estado.errores.confirmPassword?.let { Text(it) } },
@@ -197,12 +213,14 @@ fun LoginFormContent(
         Button(
             onClick = { viewModel.validarFormulario() },
             enabled = isLoginEnabled,
-            shape = formaCampo,
+            shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(54.dp)
         ) {
             Text("Iniciar Sesión", fontWeight = FontWeight.SemiBold)
+            Spacer(Modifier.width(8.dp))
+            Icon(Icons.AutoMirrored.Filled.ArrowForward, null, modifier = Modifier.size(18.dp))
         }
     }
 
@@ -212,33 +230,42 @@ fun LoginFormContent(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        HorizontalDivider(modifier = Modifier.weight(1f))
+        HorizontalDivider(modifier = Modifier.weight(1f), color = GdBorder)
         Text(
-            text = "  o continúa con  ",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            text = "  O CONTINÚA CON  ",
+            style = MaterialTheme.typography.labelSmall,
+            color = GdTextMuted,
+            letterSpacing = 1.sp
         )
-        HorizontalDivider(modifier = Modifier.weight(1f))
+        HorizontalDivider(modifier = Modifier.weight(1f), color = GdBorder)
     }
-    Spacer(modifier = Modifier.height(20.dp))
+    Spacer(modifier = Modifier.height(16.dp))
 
-    // ========== BOTONES GOOGLE Y APPLE (abren la ventana de cuenta) ==========
-    BotonSocial(
-        texto = "Continuar con Google",
-        icono = R.drawable.ic_google,
-        colorIcono = Color.Unspecified,
-        habilitado = isLoginEnabled,
-        onClick = { proveedorActivo = "Google" }
-    )
+    // ========== GOOGLE Y APPLE (abren la ventana de cuenta) ==========
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+        BotonSocial(
+            texto = "Google",
+            icono = R.drawable.ic_google,
+            colorIcono = Color.Unspecified,
+            habilitado = isLoginEnabled,
+            modifier = Modifier.weight(1f),
+            onClick = { proveedorActivo = "Google" }
+        )
+        BotonSocial(
+            texto = "Apple",
+            icono = R.drawable.ic_apple,
+            colorIcono = MaterialTheme.colorScheme.onSurface,
+            habilitado = isLoginEnabled,
+            modifier = Modifier.weight(1f),
+            onClick = { proveedorActivo = "Apple" }
+        )
+    }
 
-    Spacer(modifier = Modifier.height(10.dp))
-
-    BotonSocial(
-        texto = "Continuar con Apple",
-        icono = R.drawable.ic_apple,
-        colorIcono = MaterialTheme.colorScheme.onSurface,
-        habilitado = isLoginEnabled,
-        onClick = { proveedorActivo = "Apple" }
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        text = "Tus permisos se cargarán según tu rol",
+        style = MaterialTheme.typography.labelSmall,
+        color = GdTextMuted
     )
 
     // ========== VENTANA DE INICIO DE SESIÓN CON CUENTA ==========
@@ -264,15 +291,19 @@ private fun BotonSocial(
     icono: Int,
     colorIcono: Color,
     habilitado: Boolean,
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
     OutlinedButton(
         onClick = onClick,
         enabled = habilitado,
         shape = RoundedCornerShape(14.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
+        border = BorderStroke(1.dp, GdBorder),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = GdSurfaceHigh,
+            contentColor = GdTextPrimary
+        ),
+        modifier = modifier.height(52.dp)
     ) {
         Icon(
             painter = painterResource(id = icono),
@@ -280,10 +311,20 @@ private fun BotonSocial(
             tint = colorIcono,
             modifier = Modifier.size(20.dp)
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(texto, fontWeight = FontWeight.Medium)
     }
 }
+
+@Composable
+private fun coloresCampo() = OutlinedTextFieldDefaults.colors(
+    focusedContainerColor = GdSurfaceHigh,
+    unfocusedContainerColor = GdSurfaceHigh,
+    focusedBorderColor = GdPrimary,
+    unfocusedBorderColor = GdBorder,
+    focusedLeadingIconColor = GdPrimary,
+    unfocusedLeadingIconColor = GdTextMuted
+)
 
 // Ventana emergente para ingresar la cuenta del proveedor (simulada)
 @Composable
@@ -394,4 +435,3 @@ private fun DialogoCuentaSocial(
         }
     )
 }
-

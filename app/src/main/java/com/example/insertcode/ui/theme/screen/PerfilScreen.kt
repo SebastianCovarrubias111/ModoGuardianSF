@@ -1,33 +1,52 @@
 package com.example.insertcode.ui.theme.screen
 
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.insertcode.ui.ImagenInteligente // ✅ CORREGIDO: Ruta real sin la palabra 'components'
+import androidx.navigation.NavHostController
+import com.example.insertcode.ui.ImagenInteligente
+import com.example.insertcode.ui.theme.GdPrimary
+import com.example.insertcode.ui.theme.GdSuccess
+import com.example.insertcode.ui.theme.GdTextPrimary
+import com.example.insertcode.ui.theme.components.EstadoChip
+import com.example.insertcode.ui.theme.components.GuardianCard
+import com.example.insertcode.ui.theme.components.SeccionTitulo
 import com.example.insertcode.viewmodel.PerfilViewModel
 
 @Composable
 fun PerfilScreen(
     viewModel: PerfilViewModel,
+    navController: NavHostController,
+    email: String,
+    rol: String,
     modifier: Modifier = Modifier
 ) {
-    // Escuchamos el estado reactivo del URI de la imagen desde el ViewModel
+
     val imagenUri by viewModel.imagenUri.collectAsState()
 
-    // 1. Lanzador nativo para abrir la Galería del dispositivo
     val launcherGaleria = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         viewModel.actualizarImagen(uri)
     }
 
-    // 2. Lanzador nativo para activar la Cámara y capturar una foto nueva
     val launcherCamara = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { exito ->
@@ -36,45 +55,98 @@ fun PerfilScreen(
         }
     }
 
+    val permisos = when (rol) {
+        "Admin" -> listOf(
+            "Gestión de clientes y catálogo",
+            "Registro y cotización de pedidos",
+            "Consulta de entregas y rutas",
+            "Acceso a indicadores"
+        )
+        "Supervisor" -> listOf(
+            "Seguimiento de pedidos",
+            "Consulta de entregas y rutas",
+            "Acceso a indicadores"
+        )
+        else -> listOf(
+            "Consulta de entregas asignadas",
+            "Actualización de estado de despacho"
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Text(
-            text = "Perfil de Usuario",
-            style = MaterialTheme.typography.headlineLarge
-        )
+        SeccionTitulo("Mi perfil", "Datos de la cuenta, foto y permisos asignados")
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Renderizado del componente circular inteligente (muestra foto o ícono por defecto)
-        ImagenInteligente(imagenUri = imagenUri)
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Botón para la Galería
-        Button(
-            onClick = { launcherGaleria.launch("image/*") },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Seleccionar desde Galería")
+        GuardianCard(Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ImagenInteligente(imagenUri = imagenUri)
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    email.ifBlank { "Sin correo" },
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = GdTextPrimary
+                )
+                Spacer(Modifier.height(6.dp))
+                EstadoChip(rol.uppercase().ifBlank { "SIN ROL" }, GdPrimary)
+                Spacer(Modifier.height(16.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    OutlinedButton(
+                        onClick = { launcherGaleria.launch("image/*") },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.PhotoLibrary, null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text("Galería")
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            val uriSeguro = viewModel.crearUriTemporal()
+                            launcherCamara.launch(uriSeguro)
+                        },
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.PhotoCamera, null, modifier = Modifier.size(18.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text("Cámara")
+                    }
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // Botón para la Cámara
-        Button(
-            onClick = {
-                // Generamos un URI seguro temporal antes de lanzar la cámara
-                val uriSeguro = viewModel.crearUriTemporal()
-                launcherCamara.launch(uriSeguro)
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Tomar Foto con Cámara")
+        GuardianCard(Modifier.fillMaxWidth()) {
+            Text(
+                "Permisos del perfil ($rol)",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = GdTextPrimary
+            )
+            permisos.forEach { permiso ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        permiso,
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = GdTextPrimary
+                    )
+                    EstadoChip("ACTIVO", GdSuccess)
+                }
+            }
         }
     }
 }

@@ -1,49 +1,30 @@
 package com.example.insertcode.ui.theme
 
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = GuardianPrimaryLight,
-    secondary = Color(0xFFCCC2DC),
-    tertiary = GuardianAccent
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = GuardianPrimary,
-    secondary = GuardianPrimaryDark,
-    tertiary = GuardianAccent,
-    background = GuardianBackground,
-    surface = Color.White
+private val GuardianDarkScheme = darkColorScheme(
+    primary = GdPrimary,
+    onPrimary = Color.White,
+    secondary = GdInfo,
+    tertiary = GdSuccess,
+    background = GdBackground,
+    onBackground = GdTextPrimary,
+    surface = GdSurface,
+    onSurface = GdTextPrimary,
+    surfaceVariant = GdSurfaceHigh,
+    onSurfaceVariant = GdTextMuted,
+    outline = GdBorder,
+    outlineVariant = GdBorder,
+    error = GdDanger
 )
 
 @Composable
-fun InsertCodeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Desactivado para usar la paleta propia de Modo Guardián
-    dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
-) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-
+fun InsertCodeTheme(content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = GuardianDarkScheme,
         typography = Typography,
         content = content
     )
