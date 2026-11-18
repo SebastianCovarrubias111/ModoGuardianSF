@@ -1,10 +1,13 @@
 package com.example.insertcode.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.insertcode.ui.theme.screen.CatalogoScreen
 import com.example.insertcode.ui.theme.screen.ClientesScreen
 import com.example.insertcode.ui.theme.screen.EntregasScreen
 import com.example.insertcode.ui.theme.screen.HomeAdminScreen
@@ -34,6 +37,7 @@ sealed class Screen(val route: String) {
     data object Pedidos : Screen("pedidos")
     data object Entregas : Screen("entregas")
     data object Indicadores : Screen("indicadores")
+    data object Catalogo : Screen("catalogo")
 
 }
 
@@ -95,10 +99,18 @@ fun AppNavigation(
 
         // PERFIL
         composable(Screen.Perfil.route) {
+            val estadoLogin by loginViewModel.estado.collectAsState()
             PerfilScreen(
                 viewModel = perfilViewModel,
-                navController = navController
+                navController = navController,
+                email = estadoLogin.email,
+                rol = estadoLogin.rol.orEmpty()
             )
+        }
+
+        // CATÁLOGO
+        composable(Screen.Catalogo.route) {
+            CatalogoScreen()
         }
 
         // NUEVAS PANTALLAS
