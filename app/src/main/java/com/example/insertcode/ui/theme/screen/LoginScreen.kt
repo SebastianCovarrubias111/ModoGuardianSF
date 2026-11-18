@@ -251,14 +251,7 @@ fun LoginFormContent(
             modifier = Modifier.weight(1f),
             onClick = { proveedorActivo = "Google" }
         )
-        BotonSocial(
-            texto = "Apple",
-            icono = R.drawable.ic_apple,
-            colorIcono = MaterialTheme.colorScheme.onSurface,
-            habilitado = isLoginEnabled,
-            modifier = Modifier.weight(1f),
-            onClick = { proveedorActivo = "Apple" }
-        )
+
     }
 
     Spacer(modifier = Modifier.height(16.dp))
