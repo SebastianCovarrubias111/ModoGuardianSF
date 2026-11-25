@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
 
                 val mostrarBarras = rutaActual != null &&
                         rutaActual != Screen.Login.route &&
+                        rutaActual != Screen.CrearCuenta.route &&
                         rutaActual != Screen.AnimacionesEstados.route
 
                 val homeRoute = when (estadoLogin.rol) {

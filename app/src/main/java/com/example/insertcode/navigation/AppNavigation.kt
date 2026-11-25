@@ -1,5 +1,6 @@
 package com.example.insertcode.navigation
 
+import com.example.insertcode.ui.theme.screen.CrearCuentaScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +40,8 @@ sealed class Screen(val route: String) {
     data object Indicadores : Screen("indicadores")
     data object Catalogo : Screen("catalogo")
 
+    data object CrearCuenta : Screen("crear_cuenta")
+
 }
 
 sealed class NavigationEvent {
@@ -66,6 +69,11 @@ fun AppNavigation(
             LoginScreen(viewModel = loginViewModel)
         }
 
+        // CREAR CUENTA (registro)
+        composable(Screen.CrearCuenta.route) {
+            CrearCuentaScreen(onVolver = { navController.popBackStack() })
+
+        }
         // ADMIN
         composable(Screen.HomeAdmin.route) {
             HomeAdminScreen(

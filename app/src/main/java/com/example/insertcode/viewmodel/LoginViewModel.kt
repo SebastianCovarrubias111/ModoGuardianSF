@@ -2,6 +2,7 @@ package com.example.insertcode.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.insertcode.data.UsuarioRepositorio
 import com.example.insertcode.model.LoginErrores
 import com.example.insertcode.model.LoginUiState
 import com.example.insertcode.navigation.NavigationEvent
@@ -105,47 +106,58 @@ class LoginViewModel : ViewModel() {
         // Simulación de carga (isLoading) ante errores de datos o conectividad
         _estado.update { it.copy(isLoading = true) }
 
-        // Credenciales de prueba para el MVP de InsertCode
-        val emailInput = estadoActual.email.trim()
-        val passwordInput = estadoActual.password
+        // Autenticación contra los usuarios registrados (por defecto + creados en la app)
+        val usuario = UsuarioRepositorio.autenticar(
+            estadoActual.email.trim(),
+            estadoActual.password
+        )
 
-        when {
-            emailInput == "admin@insertcode.cl" && passwordInput == "123456" -> {
-                _estado.update { it.copy(isLoading = false, rol = "Admin") }
-                navigateTo(Screen.HomeAdmin.route)
-            }
-            emailInput == "supervisor@insertcode.cl" && passwordInput == "123456" -> {
-                _estado.update { it.copy(isLoading = false, rol = "Supervisor") }
-                navigateTo(Screen.HomeSupervisor.route)
-            }
-            emailInput == "operador@insertcode.cl" && passwordInput == "123456" -> {
-                _estado.update { it.copy(isLoading = false, rol = "Operador") }
-                navigateTo(Screen.HomeOperator.route)
-            }
-            else -> {
-                _estado.update {
-                    it.copy(
-                        isLoading = false,
-                        errores = LoginErrores(
-                            email = "Credenciales incorrectas o usuario no registrado",
-                            password = "Verifique su contraseña"
-                        )
+        if (usuario == null) {
+            _estado.update {
+                it.copy(
+                    isLoading = false,
+                    errores = LoginErrores(
+                        email = "Credenciales incorrectas o usuario no registrado",
+                        password = "Verifique su contraseña"
                     )
-                }
-                return false
+                )
             }
+            return false
         }
+
+        _estado.update { it.copy(isLoading = false, rol = usuario.rol) }
+        navigateTo(rutaInicioPorRol(usuario.rol))
         return true
     }
-    // Inicio de sesión social (simulado, igual que el login con usuarios de prueba)
 
-    // Inicio de sesión social (simulado): recibe el correo ingresado en la ventana
+    // Ruta de inicio según el rol del usuario
+    private fun rutaInicioPorRol(rol: String): String = when (rol) {
+        "Admin" -> Screen.HomeAdmin.route
+        "Supervisor" -> Screen.HomeSupervisor.route
+        else -> Screen.HomeOperator.route
+    }
+
+    // ===== Filtros del inicio de sesión con Google =====
+    // El correo debe ser de Google (@gmail.com) y estar registrado
+    fun errorCorreoGoogle(correo: String): String? = when {
+        !UsuarioRepositorio.esCuentaGoogle(correo) -> "Usa una cuenta de Google (@gmail.com)"
+        UsuarioRepositorio.buscarPorCorreo(correo) == null ->
+            "Esta cuenta no está registrada. Crea una cuenta primero"
+        else -> null
+    }
+
+    // La contraseña debe coincidir con la de la cuenta registrada
+    fun errorClaveGoogle(correo: String, clave: String): String? =
+        if (UsuarioRepositorio.autenticar(correo, clave) == null) "Contraseña incorrecta" else null
+
+    // Inicio de sesión con Google: solo se llama después de validar la cuenta
     fun loginSocial(correo: String) {
+        val usuario = UsuarioRepositorio.buscarPorCorreo(correo) ?: return
         viewModelScope.launch {
             _estado.update { it.copy(isLoading = true, errores = LoginErrores()) }
             delay(800) // simula la conexión con el proveedor
-            _estado.update { it.copy(isLoading = false, email = correo, rol = "Operador") }
-            _eventosNavegacion.emit(NavigationEvent.NavigateTo(Screen.HomeOperator.route))
+            _estado.update { it.copy(isLoading = false, email = usuario.correo, rol = usuario.rol) }
+            _eventosNavegacion.emit(NavigationEvent.NavigateTo(rutaInicioPorRol(usuario.rol)))
         }
     }
 
