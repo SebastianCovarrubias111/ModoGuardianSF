@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -29,6 +28,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.insertcode.R
+import com.example.insertcode.data.UsuarioRepositorio
+import com.example.insertcode.model.LoginUiState
+import com.example.insertcode.navigation.Screen
 import com.example.insertcode.ui.theme.GdBackground
 import com.example.insertcode.ui.theme.GdBackgroundAlt
 import com.example.insertcode.ui.theme.GdBorder
@@ -38,10 +41,6 @@ import com.example.insertcode.ui.theme.GdSurface
 import com.example.insertcode.ui.theme.GdSurfaceHigh
 import com.example.insertcode.ui.theme.GdTextMuted
 import com.example.insertcode.ui.theme.GdTextPrimary
-import com.example.insertcode.R
-import com.example.insertcode.model.LoginUiState
-import com.example.insertcode.ui.theme.GuardianGradientBottom
-import com.example.insertcode.ui.theme.GuardianGradientTop
 import com.example.insertcode.ui.utils.WindowSizeClass
 import com.example.insertcode.ui.utils.rememberWindowSizeClass
 import com.example.insertcode.viewmodel.LoginViewModel
@@ -131,8 +130,8 @@ fun LoginFormContent(
     isLoginEnabled: Boolean
 ) {
     var verPassword by remember { mutableStateOf(false) }
-    // null = sin ventana; "Google" o "Apple" = ventana de cuenta abierta
-    var proveedorActivo by remember { mutableStateOf<String?>(null) }
+    var mostrarGoogle by remember { mutableStateOf(false) }
+    var mostrarUsuarios by remember { mutableStateOf(false) }
 
     val transformacion =
         if (verPassword) VisualTransformation.None else PasswordVisualTransformation()
@@ -241,44 +240,78 @@ fun LoginFormContent(
     }
     Spacer(modifier = Modifier.height(16.dp))
 
-    // ========== GOOGLE Y APPLE (abren la ventana de cuenta) ==========
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        BotonSocial(
-            texto = "Google",
-            icono = R.drawable.ic_google,
-            colorIcono = Color.Unspecified,
-            habilitado = isLoginEnabled,
-            modifier = Modifier.weight(1f),
-            onClick = { proveedorActivo = "Google" }
+    // ========== GOOGLE (abre la ventana de cuenta con validación) ==========
+    BotonSocial(
+        texto = "Google",
+        icono = R.drawable.ic_google,
+        colorIcono = Color.Unspecified,
+        habilitado = isLoginEnabled,
+        modifier = Modifier.fillMaxWidth(),
+        onClick = { mostrarGoogle = true }
+    )
+
+    // ========== CREAR CUENTA ==========
+    Spacer(modifier = Modifier.height(12.dp))
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = "¿No tienes cuenta?",
+            style = MaterialTheme.typography.bodyMedium,
+            color = GdTextMuted
         )
-        BotonSocial(
-            texto = "Apple",
-            icono = R.drawable.ic_apple,
-            colorIcono = MaterialTheme.colorScheme.onSurface,
-            habilitado = isLoginEnabled,
-            modifier = Modifier.weight(1f),
-            onClick = { proveedorActivo = "Apple" }
+        TextButton(onClick = { viewModel.navigateTo(Screen.CrearCuenta.route) }) {
+            Text("Crear cuenta", fontWeight = FontWeight.Bold)
+        }
+    }
+
+    // ========== USUARIOS DE PRUEBA ==========
+    TextButton(onClick = { mostrarUsuarios = true }) {
+        Text(
+            "Ver usuarios de prueba",
+            style = MaterialTheme.typography.labelMedium,
+            color = GdTextMuted
         )
     }
 
-    Spacer(modifier = Modifier.height(16.dp))
     Text(
         text = "Tus permisos se cargarán según tu rol",
         style = MaterialTheme.typography.labelSmall,
         color = GdTextMuted
     )
 
-    // ========== VENTANA DE INICIO DE SESIÓN CON CUENTA ==========
-    proveedorActivo?.let { proveedor ->
-        val esGoogle = proveedor == "Google"
-        DialogoCuentaSocial(
-            proveedor = proveedor,
-            icono = if (esGoogle) R.drawable.ic_google else R.drawable.ic_apple,
-            colorIcono = if (esGoogle) Color.Unspecified else MaterialTheme.colorScheme.onSurface,
-            onCancelar = { proveedorActivo = null },
+    // ========== VENTANA DE GOOGLE ==========
+    if (mostrarGoogle) {
+        DialogoCuentaGoogle(
+            onCancelar = { mostrarGoogle = false },
+            validarCorreo = viewModel::errorCorreoGoogle,
+            validarClave = viewModel::errorClaveGoogle,
             onContinuar = { correo ->
-                proveedorActivo = null
+                mostrarGoogle = false
                 viewModel.loginSocial(correo)
+            }
+        )
+    }
+
+    // ========== VENTANA DE USUARIOS DE PRUEBA ==========
+    if (mostrarUsuarios) {
+        AlertDialog(
+            onDismissRequest = { mostrarUsuarios = false },
+            title = { Text("Usuarios de prueba") },
+            text = {
+                Column {
+                    UsuarioRepositorio.usuariosPorDefecto.forEach { u ->
+                        Text(u.rol, fontWeight = FontWeight.Bold)
+                        Text("Correo: ${u.correo}", style = MaterialTheme.typography.bodySmall)
+                        Text("Contraseña: ${u.clave}", style = MaterialTheme.typography.bodySmall)
+                        Spacer(Modifier.height(10.dp))
+                    }
+                    Text(
+                        "En \"Confirmar contraseña\" escribe la misma clave. La cuenta @gmail.com sirve para el botón de Google.",
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { mostrarUsuarios = false }) { Text("Cerrar") }
             }
         )
     }
@@ -326,13 +359,12 @@ private fun coloresCampo() = OutlinedTextFieldDefaults.colors(
     unfocusedLeadingIconColor = GdTextMuted
 )
 
-// Ventana emergente para ingresar la cuenta del proveedor (simulada)
+// Ventana emergente de Google: solo deja entrar a cuentas @gmail.com registradas
 @Composable
-private fun DialogoCuentaSocial(
-    proveedor: String,
-    icono: Int,
-    colorIcono: Color,
+private fun DialogoCuentaGoogle(
     onCancelar: () -> Unit,
+    validarCorreo: (String) -> String?,
+    validarClave: (String, String) -> String?,
     onContinuar: (String) -> Unit
 ) {
     var correo by remember { mutableStateOf("") }
@@ -340,21 +372,19 @@ private fun DialogoCuentaSocial(
     var errorCorreo by remember { mutableStateOf<String?>(null) }
     var errorClave by remember { mutableStateOf<String?>(null) }
 
-    val etiquetaCorreo = if (proveedor == "Apple") "Apple ID (correo)" else "Correo de Google"
-
     AlertDialog(
         onDismissRequest = onCancelar,
         icon = {
             Icon(
-                painter = painterResource(id = icono),
+                painter = painterResource(id = R.drawable.ic_google),
                 contentDescription = null,
-                tint = colorIcono,
+                tint = Color.Unspecified,
                 modifier = Modifier.size(32.dp)
             )
         },
         title = {
             Text(
-                text = "Iniciar sesión con $proveedor",
+                text = "Iniciar sesión con Google",
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -362,7 +392,7 @@ private fun DialogoCuentaSocial(
         text = {
             Column {
                 Text(
-                    text = "Ingresa tu cuenta de $proveedor para continuar en Modo Guardián.",
+                    text = "Ingresa tu cuenta de Google registrada para continuar en Modo Guardián.",
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(16.dp))
@@ -373,7 +403,7 @@ private fun DialogoCuentaSocial(
                         correo = it
                         errorCorreo = null
                     },
-                    label = { Text(etiquetaCorreo) },
+                    label = { Text("Correo de Google") },
                     singleLine = true,
                     shape = RoundedCornerShape(14.dp),
                     isError = errorCorreo != null,
@@ -413,11 +443,12 @@ private fun DialogoCuentaSocial(
                     errorCorreo = when {
                         correo.isBlank() -> "Ingresa tu correo"
                         !correo.contains("@") -> "Formato de correo inválido"
-                        else -> null
+                        else -> validarCorreo(correo.trim())
                     }
                     errorClave = when {
                         clave.isBlank() -> "Ingresa tu contraseña"
                         clave.length < 6 -> "Debe tener al menos 6 caracteres"
+                        errorCorreo == null -> validarClave(correo.trim(), clave)
                         else -> null
                     }
                     if (errorCorreo == null && errorClave == null) {
